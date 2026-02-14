@@ -17,7 +17,7 @@ namespace BowlingApp.API.Controllers
         }
 
         // POST: api/Game
-        // Create a new game with players
+        // Create a new game with players (each player gets 10 initialized frames)      
         [HttpPost]
         public async Task<ActionResult<Game>> CreateGame([FromBody] List<string> playerNames)
         {

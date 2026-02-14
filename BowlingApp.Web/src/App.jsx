@@ -63,6 +63,26 @@ function App() {
         const updatedGame = await getGame(game.id);
         setGame(updatedGame);
 
+        // Determine current player index from the updated game state
+        // Look for the player with an incomplete frame (awaiting roll 2 or next frame)
+        let nextPlayerIndex = 0;
+        for (let i = 0; i < updatedGame.players.length; i++) {
+          const player = updatedGame.players[i];
+          const lastFrame = player.frames?.[player.frames.length - 1];
+          
+          // Check if this player has a frame waiting for roll 2 (incomplete)
+          if (lastFrame && lastFrame.roll2 === null && lastFrame.roll1 !== 10) {
+            nextPlayerIndex = i;
+            break;
+          }
+          // If last frame is complete or no frames yet, check next player
+          if (!lastFrame || (lastFrame.roll2 !== null || lastFrame.roll1 === 10)) {
+            // This player's turn might be coming up, but we'll cycle to next
+            nextPlayerIndex = (i + 1) % updatedGame.players.length;
+          }
+        }
+        setCurrentPlayerIndex(nextPlayerIndex);
+
         if (updatedGame.isFinished) setIsGameOver(true);
 
       } else {
